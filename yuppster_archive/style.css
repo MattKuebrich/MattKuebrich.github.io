@@ -1,0 +1,15 @@
+body {font-family: "Arial", Helvetica, Sans-Serif;font-size: 13px;background-color:#fefefe;color:#333;}h1{font-family: Arial;color: #333;padding:0px 0px 0px 0px;margin:10px 0px 10px 0px;font-size: 35px;letter-spacing: -3px;font-weight: bolder;}h2{font-family: Arial;color: #333;padding:0px 0px 0px 0px;margin:-6px 0px 0px 0px;font-size: 40px;letter-spacing: -3px;font-weight: bolder;}h3{font-family: Trebuchet MS;font-family: Arial;color: #333;padding:0px 0px 0px 0px;margin:20px 0px 10px 0px;font-size: 30px;letter-spacing: -3px;font-weight: bolder;}/*	h2{font-family: Times;color: #333;padding:0px 0px 0px 0px;margin:20px 0px 10px 0px;font-size: 40px;letter-spacing: -2px;font-weight: bold;}*/			/*			h2 {color: #2a2a2a;background-color: #a5da67;font-size: 11px;font-family:verdana;font-weight: bold;padding:10px 10px 10px 5px;margin:20px 0px 10px 0px;}*/div.intro {width:350px;}.xtra {font-family: "Arial", Helvetica, Arial, Sans-Serif;font-size: 13px;color: #333;font-height:0px;letter-spacing: 0px;font-weight: normal;}div.info {background-image:url("info2.gif");background-repeat:no-repeat;width:11px;height:16px;margin-left:3px;position:absolute;}div.infoalbum {background-image:url("info2.gif");background-repeat:no-repeat;width:11px;height:16px;display:inline;position:absolute;margin-left:6px;margin-top:19px;color:#333;}div.infowrap {display:inline;position:absolute;margin-left:3px;margin-top:12px;}.down {background-color:#EEE;display:inline;font-family: Arial;color: #333;font-weight:normal;font-size: 12px;line-height:15px;letter-spacing:0px;}div.legandyellow2{background-color:#f8f7ad;border:1px solid #333;width:80px;height:888px;color:#f8f7ad;display:inline;margin:0px;padding:0px;}.legandyellow {border:1px solid #333;color:#f8f7ad;}div.songs {font-family: Arial;color: #333;font-weight:normal;font-size: 13px;line-height:17px;letter-spacing:0px;}div.songs a{}a {color:#333; text-decoration:none; background-color:#f8f7ad;display:inline;}a:hover {color:#1a1a1a; text-decoration:underline;}div.info{font-family: "Arial", Helvetica, Arial, Sans-Serif;font-size: 13px;font-weight: normal;display:inline;letter-spacing:0px;}div.info a:hover {color:#2a2a2a;}div.info a:link span{color:#2a2a2a; display: none;}div.info a:visited span{color:#2a2a2a; display: none;}div.info a:hover span {position: absolute;margin:0px 0px 0px 20px;background-color: white;max-width:200px;width:200px;padding: 5px 10px 5px 10px;border: 1px solid #2a2a2a;color: #2a2a2a;text-align:left;display: inline;letter-spacing:0px;}hr {border: 1px dotted #dddddd;
+text-align: left;
+width: 400px;
+margin: 0 auto 0 0;
+margin-top:10px;margin-bottom:10px;}img {border:0px;margin:10px 10px 10px 0px;}
+
+.newsblock img {
+margin:0px 0px 0px 0px;
+}.infoblock {width:350px; position:relative; 
+margin:10px;}
+
+.newsblock {width:400px; position:relative; 
+margin:0px;
+line-height:17px;
+letter-spacing:0px;}
