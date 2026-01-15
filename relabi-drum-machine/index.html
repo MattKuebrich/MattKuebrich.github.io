@@ -151,6 +151,9 @@
 
     }
     select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
         font-family: 'Fragment Mono', monospace;
         font-size: 0.7rem !important;       /* Smaller font */
         border: 1px solid #ccc !important;  /* Light border */
@@ -283,7 +286,7 @@
 <body>
 
 
-<div style="padding-top: 10px; font-size: 0.8rem; color:#66f;"><strong>Relabi Drum Machine</strong></div>
+<div style="padding-top: 10px; font-size: 0.8rem; color:#66f;">Relabi Drum Machine</div>
   <div class="control-panel">
     <div class="global-controls">
       <div class="global-control-group">
@@ -439,7 +442,7 @@
         ).join('');
 
         section.innerHTML = `
-          <h4 class="${lfoTitleClasses[i]}"><strong>LFO ${i+1}</strong></h4>
+          <h4 class="${lfoTitleClasses[i]}">LFO ${i+1}/h4>
           <label>Waveform:
             <select data-type="waveform" data-index="${i}">
               <option value="0" ${waveformType[i] === 0 ? 'selected' : ''}>Sine</option>
