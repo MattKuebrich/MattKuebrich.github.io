@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RelabiDrum</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fragment Mono', monospace;
+      background: #fff;
+      color: #000;
+      text-align: center;
+      padding: 3rem;
+      padding-top: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    a:link { color:#66f; }
+    a:visited { color:#66f; }
+
+    h4 { font-size: 0.85rem; margin-bottom: 0.5rem; }
+
+    .lfo hr {
+      margin: 1rem 0 !important;
+      border: 1px dashed lightgrey;
+    }
+    canvas {
+      display: block;
+      background: #fff;
+      border: 1px solid lightgrey;
+      flex-grow: 1;
+      max-width: 800px; 
+      height: 150px;
+    }
+    label {
+      display: block;
+      margin-top: 0.5em;
+      color: #000;
+      font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    /* Updated label to be flex to align text, slider, and value */
+    
+    input[type=range], select {
+      background: #f1f1f1;
+      border: 1px solid #ccc;
+      color: #000;
+    }
+    input[type=range] { 
+      cursor: pointer; 
+      flex-grow: 1; /* Allow slider to take available width */
+      max-width: 125px; /* Keep original width constraint */
+    }
+
+    /* Style for the numeric readout */
+    .value-display {
+      color: #999;
+      font-size: 0.7rem;
+      min-width: 25px;
+      text-align: right;
+    }
+
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+.top-section {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between; /* Changed from center */
+      align-items: flex-start;
+      gap: 1.5rem;
+      width: 100%;
+      margin-bottom: 0.2rem;
+      flex-wrap: wrap;
+    }
+
+    .global-controls {
+      display: flex;
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 0.5rem;
+      padding: 0;
+      min-width: 200px;
+      text-align: left;
+    }
+
+    .global-control-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+    
+    .control-buttons {
+      display: flex;
+      gap: 0.5rem;
+
+    }
+
+    button {
+      font-family: 'Fragment Mono', monospace;
+      font-size: 0.7rem; 
+      padding: 0.3rem 0.6rem; 
+      background: #f1f1f1;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background: #e5e5e5; }
+    
+    #playPauseBtn {
+      background: #66f;
+      color: white;
+      border: 1px solid #66f;
+      font-weight: bold;
+      width: 100%;
+    }
+    #playPauseBtn:hover {
+      background: #55e;
+      border-color: #55e;
+    }
+    
+    #randomizeBtn {
+      background: white;
+      color: black;
+      border: 1px solid black;
+      width: 100%;
+      flex-grow: 0;
+    }
+    #randomizeBtn:hover { background: #e5e5e5; }
+
+    .lfo input[type=range] { width: 90px; }
+
+.lfo-controls {
+      display: flex;
+      justify-content: space-between; 
+      gap: 0rem;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .lfo {
+      background: #ffffff;
+      border: 0px solid black;
+      padding: 0rem;
+      padding-top: 0rem;
+      border-radius: 0.2rem;
+      width: 210px;
+      text-align: left;
+      color: #000;
+      box-sizing: border-box; 
+    }
+    
+    .drop-zone {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: 1px dashed #ccc;
+      border-radius: 4px;
+      padding: 6px;
+      text-align: center;
+      font-size: 0.65rem;
+      color: #666;
+      background: #fafafa;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 180px;
+    }
+    .drop-zone.dragover {
+      background: #e6f7ff;
+      border-color: #66f;
+      color: #66f;
+    }
+
+    /* Mod Matrix Styles */
+    .mod-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 4px;
+      font-size: 0.65rem;
+    }
+    .mod-row select {
+      width: 60px;
+      font-size: 0.65rem !important;
+      padding: 0 2px;
+    }
+    .mod-row input[type=range] {
+      width: 50px;
+    }
+    .mod-header {
+      font-size: 0.65rem;
+      color: #666;
+      margin-top: 20px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    /* Mobile Responsiveness */
+    @media (max-width: 650px) {
+      .top-section {
+        flex-direction: column;
+        align-items: center;
+      }
+      .global-controls {
+        width: 100%;
+        align-items: left;
+      }
+      .control-buttons {
+        justify-content: center;
+      }
+      canvas {
+        width: 100%;
+      }
+      .lfo-controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      .lfo {
+        width: 100%;
+        max-width: 100%; 
+        border-bottom: 1px solid #eee;
+        margin-bottom: 1rem;
+      }
+    }
+    
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 0.2px;
+      border-radius: 0px;
+      background: #ccc;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 0.7rem;
+        width: 0.7rem;
+        border-radius: 50%;
+        background: #eee;
+        border: 1px solid #777;
+        cursor: pointer; 
+    }
+    input[type="range"]::-moz-range-thumb {
+        height: 0.6rem;
+        width: 0.6rem;
+        border-radius: 50%;
+        background: #eee;
+        border: 1px solid #777;
+        cursor: pointer; 
+    }
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: #fff !important; 
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
+        background-repeat: no-repeat, repeat !important;
+        background-position: right 0.7em top 50%, 0 0 !important;
+        background-size: 0.65em auto, 100% !important;
+        border: 1px solid #ccc !important; 
+        font-size: 0.7rem !important; 
+        font-family: "Fragment Mono", monospace;
+        border-radius: 0;
+        padding: 0.25em;
+    }
+
+    .lfo-controls select {
+      margin-top: 4px;
+      width: 120px;
+    }
+    .lfo label {
+      margin-bottom: 0.5em;
+    }
+    .muteText {
+      font-size: 1.0em;
+      display: inline;
+    }
+    .lfo-title-1 { color: #66f; }
+    .lfo-title-2 { color: lightgrey; }
+    .lfo-title-3 { color: grey; }
+    .lfo-title-4 { color: black; }
+    .checkbox-row { margin-bottom: 8px; }
+    hr {
+      border-top: 0.5px solid black;
+      width: 100%;
+    }
+    .corner-button {
+      position: fixed;
+      background: none;
+      border: 1px solid black;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 4px;
+    }
+    .corner-button:hover { background: #e5e5e5; }
+    #helpButton { bottom: 2rem; left: 2rem; }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    .modal-content {
+      font-size: 0.75rem;
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      width: 90%;
+      max-width: 700px;
+      border: 1px solid black;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align:left;
+    }
+    .close-button {
+      position: absolute;
+      right: 1rem;
+      top: 0.5rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="control-panel">
+    
+    <div class="top-section">
+      
+      <div class="global-controls">
+        <div class="control-buttons">
+          <button id="playPauseBtn">Play</button>
+          <button id="randomizeBtn">Randomize</button>
+        </div>
+        
+        <div class="global-control-group">
+          <label>↑ Threshold:
+            <input type="range" id="topThreshold" min="-5" max="5" step="0.1" value="0.5">
+            <span class="value-display" id="topThresholdVal">0.5</span>
+          </label>
+        </div>
+        
+        <div class="global-control-group">
+          <label>↓ Threshold:
+            <input type="range" id="bottomThreshold" min="-5" max="5" step="0.1" value="-0.5">
+            <span class="value-display" id="bottomThresholdVal">-0.5</span>
+          </label>
+        </div>
+
+        <div class="global-control-group">
+          <label>Global Speed
+            <input type="range" id="globalRate" min="0.1" max="10" step="0.1" value="1">
+            <span class="value-display" id="globalRateVal">1.0</span>
+          </label>
+        </div>
+      </div>
+
+      <canvas id="waveCanvas" width="600" height="150"></canvas>
+      
+    </div>
+
+    <div class="lfo-controls" id="lfoControlPanel"></div>
+  </div>
+
+  <button id="helpButton" class="corner-button">?</button>
+
+  <div id="helpModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="closeModal">&times;</span>
+      <div class="modal-body">
+        <p><strong>About RelabiDrum:</strong></p>
+        <i>
+        "Relabi is any compelling, coordinated-seeming structure that is built up from a pulse or grid that is unstable in a way inherently difficult for human beings to grasp. For that reason, it can be said that in lived experience Relabi is a network of events grounded on a determinate pulse that “self-erases.” The experience therefore produces a sustained sense of contradiction—of a pulse and of the simultaneous absence, the complete diffusion, of that pulse."
+<p></p>
+        ― John Berndt, <a href="https://johnberndt.org/relabi/Relabi_essay.htm">“Relabi”: Patterns of the Self-Erasing Pulse</a>
+</i>
+        <p></p>
+        This drum machine is inspired by Berndt's essay above, as well as the <a href="https://www.addacsystem.com/en/products/modules/addac400-series/addac405">ADDAC System VC Relabi Generator</a> Eurorack module.
+         <p></p>
+         The general idea is that four LFOs are combined to create a complex "Relabi Wave." A top and bottom threshold are set, and when the wave passes through them, a sample is triggered.
+         <p></p>
+        Some info that might not be clear from just looking at the UI.<br>
+        <ul>
+        <li>The <b>"Trigger On"</b> settings controls when a drum trigger happens. Triggers occur when the waveform crosses the upper (↑) or lower (↓) threshold on a rising edge (>), falling edge (<), or at both thresholds on either edge.
+        If you set the same "Trigger On" settings to multiple LFOs, the samples will happen at the same time, although this can be varied by turning down the <b>Probability</b>.
+        </li>
+        <li>
+        <p></p>
+        <b>XMod</b> uses the previous LFO as a modulation source.
+        </li>
+        <p></p>
+ 
+   <li>
+        <b>Modulation:</b> Use the slots at the bottom of each LFO card to route sources (Relabi Wave, LFOs) to destinations (Pitch, Amplitude, Filter Cutoff). The slider controls depth.
+        </li>
+               </ul>
+       This project is by <a href="https://github.com/MattKuebrich" target="_blank">Matt Kuebrich</a> as a contribution to the <a href="https://10kdrummachines.com/">10,000 Drum Machines</a> series.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffers = {};
+    const samples = [
+      'kick', 'snare', 'hihat', 'clap', 'tom', 'rimshot',
+      'cowbell', 'cymbal', 'shaker', 'tambourine', 'woodblock',
+      'conga', 'bongo', 'triangle', 'cabasa', 'maracas'
+    ];
+
+    // Data structure for modulation
+    // Sources: 0=None, 1=Relabi, 2=LFO1, 3=LFO2, 4=LFO3, 5=LFO4
+    // Dests: 0=None, 1=Amp, 2=Pitch, 3=Filter
+    let modSettings = Array(4).fill().map(() => Array(3).fill().map(() => ({ source: 0, dest: 0, amount: 0 })));
+
+    async function loadAudioBuffers() {
+      for (const sample of samples) {
+        try {
+            const response = await fetch(`samples/${sample}.wav`);
+            if(response.ok) {
+                const arrayBuffer = await response.arrayBuffer();
+                audioBuffers[sample] = await ctx.decodeAudioData(arrayBuffer);
+            }
+        } catch (e) { console.log("Sample loading skipped for", sample); }
+      }
+    }
+
+    document.addEventListener('click', () => {
+      if (ctx.state === 'suspended') ctx.resume();
+    }, { once: true });
+
+    // UI elements
+    const topThreshold = document.getElementById('topThreshold');
+    const topThresholdVal = document.getElementById('topThresholdVal');
+    const bottomThreshold = document.getElementById('bottomThreshold');
+    const bottomThresholdVal = document.getElementById('bottomThresholdVal');
+    const globalRate = document.getElementById('globalRate');
+    const globalRateVal = document.getElementById('globalRateVal');
+    const randomizeBtn = document.getElementById('randomizeBtn');
+    const waveCanvas = document.getElementById('waveCanvas');
+    const waveCtx = waveCanvas.getContext('2d');
+
+
+function fmt(val) {
+  return parseFloat(val).toFixed(1);
+}
+
+    // Threshold Event Listeners with REDRAW logic and text update
+function syncAndRedraw(source, destTextElement) {
+        destTextElement.textContent = fmt(source.value); // Added fmt()
+        if (!isPlaying) {
+            redrawCanvas(); 
+        }
+    }
+
+    topThreshold.addEventListener('input', () => syncAndRedraw(topThreshold, topThresholdVal));
+    bottomThreshold.addEventListener('input', () => syncAndRedraw(bottomThreshold, bottomThresholdVal));
+    globalRate.addEventListener('input', () => globalRateVal.textContent = globalRate.value);
+
+    // LFO state
+    let phase = [0, 0, 0, 0];
+    let freq = [1, 0.25, 0.33, 0.13];
+    let gain = [1, 0.8, 0.6, 0.5];
+    let phaseOffset = [0, 0, 0, 0];
+    let crossMod = [0, 0, 0, 0];
+    let waveformType = [0, 0, 0, 0]; 
+    let audioMute = [false, false, false, false];
+    let lfoDisable = [false, false, false, false];
+    let mode = [0, 1, 2, 3];
+    let sampleIndex = [0, 1, 2, 3];
+    let sample = [0, 0, 0, 0]; 
+    let probability = [100, 100, 100, 100];
+
+    const modeLabels = ['> ↑ threshold', '< ↑ threshold', '> ↓ threshold', '< ↓ threshold', '↑↓ threshold'];
+    const lfoTitleClasses = ['lfo-title-1', 'lfo-title-2', 'lfo-title-3', 'lfo-title-4'];
+    const drumColors = ['#66F', 'lightgrey', 'grey', 'black'];
+
+    const MOD_SOURCES = ['None', 'Relabi', 'LFO 1', 'LFO 2', 'LFO 3', 'LFO 4'];
+    const MOD_DESTS = ['None', 'Amp', 'Pitch', 'Pan', 'Filter'];
+
+    function buildLFOControls() {
+      const lfoPanel = document.getElementById('lfoControlPanel');
+      lfoPanel.innerHTML = '';
+
+      for (let i = 0; i < 4; i++) {
+        const section = document.createElement('div');
+        section.className = 'lfo';
+
+        const sampleOptions = samples.map((sampleName, idx) => 
+          `<option value="${idx}" ${sampleIndex[i] === idx ? 'selected' : ''}>${sampleName}</option>`
+        ).join('');
+
+        const modeOptions = modeLabels.map((label, idx) =>
+          `<option value="${idx}" ${mode[i] === idx ? 'selected' : ''}>${label}</option>`
+        ).join('');
+
+        let modHTML = `<div class="mod-header">Sample Modulation</div>`;
+        for(let s=0; s<3; s++) {
+            modHTML += `
+            <div class="mod-row">
+                <select data-type="mod-source" data-lfo="${i}" data-slot="${s}">
+                    ${MOD_SOURCES.map((n, k) => `<option value="${k}" ${modSettings[i][s].source === k ? 'selected' : ''}>${n}</option>`).join('')}
+                </select>
+                <select data-type="mod-dest" data-lfo="${i}" data-slot="${s}">
+                    ${MOD_DESTS.map((n, k) => `<option value="${k}" ${modSettings[i][s].dest === k ? 'selected' : ''}>${n}</option>`).join('')}
+                </select>
+                <input type="range" min="0" max="1" step="0.01" value="${modSettings[i][s].amount}" data-type="mod-amount" data-lfo="${i}" data-slot="${s}">
+                <span class="value-display" data-type="mod-amount-val" data-lfo="${i}" data-slot="${s}">${modSettings[i][s].amount.toFixed(1)}</span>
+            </div>
+            `;
+        }
+
+        section.innerHTML = `
+          <h4 class="${lfoTitleClasses[i]}">LFO ${i+1}</h4>
+          
+          <label>Waveform:
+            <select data-type="waveform" data-index="${i}">
+              <option value="0" ${waveformType[i] === 0 ? 'selected' : ''}>Sine</option>
+              <option value="1" ${waveformType[i] === 1 ? 'selected' : ''}>Square</option>
+              <option value="2" ${waveformType[i] === 2 ? 'selected' : ''}>Saw</option>
+              <option value="3" ${waveformType[i] === 3 ? 'selected' : ''}>Triangle</option>
+              <option value="4" ${waveformType[i] === 4 ? 'selected' : ''}>Noise</option>
+            </select>
+          </label>
+          <label>Gain: <input type="range" min="0" max="2" step="0.01" value="${gain[i]}" data-type="gain" data-index="${i}">
+            <span class="value-display" data-type="gain-val" data-index="${i}">${gain[i].toFixed(1)}</span>
+          </label>
+          <label>Freq: <input type="range" min="0" max="10" step="0.01" value="${freq[i]}" data-type="freq" data-index="${i}">
+            <span class="value-display" data-type="freq-val" data-index="${i}">${freq[i].toFixed(1)}</span>
+          </label>
+          <label>XMod: <input type="range" min="0" max="100" step="1" value="${crossMod[i]}" data-type="xmod" data-index="${i}">
+            <span class="value-display" data-type="xmod-val" data-index="${i}">${crossMod[i].toFixed(1)}</span>
+          </label>
+
+          <div class="checkbox-row">
+            <label><input type="checkbox" data-type="disable-lfo" data-index="${i}" ${lfoDisable[i] ? 'checked' : ''}>
+            <div class="muteText"> Disable LFO</div></label>
+          </div>
+
+          <div class="mod-header">Sample Select / Trig</div>
+          <label>Sample:
+            <select id="sample-select-${i}" data-type="sample" data-index="${i}">
+              ${sampleOptions}
+            </select>
+          </label>
+          
+          <div class="drop-zone" id="drop-zone-${i}" data-index="${i}">
+            Drop audio file
+          </div>
+
+          <label><input type="checkbox" data-type="mute" data-index="${i}" ${audioMute[i] ? 'checked' : ''}>
+          <div class="muteText"> Mute Sound</div></label>
+
+          <label>Trig On:
+            <select data-type="mode" data-index="${i}">
+              ${modeOptions}
+            </select>
+          </label>
+          <label>Prob %
+            <input type="range" min="0" max="100" step="1" value="${probability[i]}" data-type="probability" data-index="${i}">
+            <span class="value-display" data-type="probability-val" data-index="${i}">${probability[i].toFixed(1)}</span>
+          </label>
+          
+          ${modHTML}
+        `;
+        lfoPanel.appendChild(section);
+      }
+
+      lfoPanel.addEventListener('input', handleLFOCtrlInput);
+      lfoPanel.addEventListener('change', handleLFOCtrlChange);
+      initDropZones();
+    }
+
+    function initDropZones() {
+      const dropZones = document.querySelectorAll('.drop-zone');
+      dropZones.forEach(zone => {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          zone.addEventListener(eventName, preventDefaults, false);
+        });
+        ['dragenter', 'dragover'].forEach(eventName => {
+          zone.addEventListener(eventName, () => zone.classList.add('dragover'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+          zone.addEventListener(eventName, () => zone.classList.remove('dragover'), false);
+        });
+        zone.addEventListener('drop', handleDrop, false);
+      });
+    }
+
+    function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+    async function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      const index = parseInt(e.target.dataset.index);
+
+      if (files.length > 0) {
+        const file = files[0];
+        if (!file.type.startsWith('audio/')) {
+          e.target.innerText = "Error: Not an audio file";
+          return;
+        }
+        e.target.innerText = "Loading...";
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+          const safeName = file.name.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 15);
+          
+          audioBuffers[safeName] = audioBuffer;
+          if (!samples.includes(safeName)) samples.push(safeName);
+          const newIndex = samples.indexOf(safeName);
+          sampleIndex[index] = newIndex;
+          
+          const selectElement = document.getElementById(`sample-select-${index}`);
+          let optionExists = false;
+          for(let i=0; i<selectElement.options.length; i++){
+              if(selectElement.options[i].text === safeName) optionExists = true;
+          }
+          if (!optionExists) {
+              const option = document.createElement("option");
+              option.text = safeName;
+              option.value = newIndex;
+              selectElement.add(option);
+          }
+          selectElement.value = newIndex;
+          e.target.innerText = `Loaded: ${safeName}`;
+        } catch (err) {
+          console.error(err);
+          e.target.innerText = "Error loading file";
+        }
+      }
+    }
+
+    function handleLFOCtrlInput(e) {
+      if (!e.target.dataset) return;
+      const ds = e.target.dataset;
+      const idx = parseInt(ds.index || ds.lfo); 
+      const value = e.target.value;
+
+      if(ds.type === 'mod-amount') {
+          modSettings[idx][parseInt(ds.slot)].amount = parseFloat(value);
+          // Update readout
+          const readout = document.querySelector(`span[data-type="mod-amount-val"][data-lfo="${idx}"][data-slot="${ds.slot}"]`);
+          if(readout) readout.textContent = fmt(value);
+          return;
+      }
+      if(ds.type === 'mod-source') {
+          modSettings[idx][parseInt(ds.slot)].source = parseInt(value);
+          return;
+      }
+      if(ds.type === 'mod-dest') {
+          modSettings[idx][parseInt(ds.slot)].dest = parseInt(value);
+          return;
+      }
+
+switch(ds.type) {
+        // We don't need to change logic here, just the updateValueDisplay function below
+        case 'gain': gain[idx] = parseFloat(value); updateValueDisplay(`[data-type='gain-val'][data-index='${idx}']`, value); break;
+        case 'freq': freq[idx] = parseFloat(value); updateValueDisplay(`[data-type='freq-val'][data-index='${idx}']`, value); break;
+        case 'xmod': crossMod[idx] = parseFloat(value); updateValueDisplay(`[data-type='xmod-val'][data-index='${idx}']`, value); break;
+        case 'waveform': waveformType[idx] = parseInt(value); break;
+        case 'mode': mode[idx] = parseInt(value); break;
+        case 'sample': sampleIndex[idx] = parseInt(value); break;
+        case 'probability': probability[idx] = parseFloat(value); updateValueDisplay(`[data-type='probability-val'][data-index='${idx}']`, value); break;
+      }
+    }
+
+    function handleLFOCtrlChange(e) {
+      if (!e.target.dataset || !e.target.dataset.type) return;
+      const type = e.target.dataset.type;
+      const idx = parseInt(e.target.dataset.index);
+
+      if (type === 'mute') audioMute[idx] = e.target.checked;
+      else if (type === 'disable-lfo') {
+        lfoDisable[idx] = e.target.checked;
+        if (!isPlaying) initializeWaveformPreview();
+      }
+    }
+
+    function updateValueDisplay(selector, value) {
+      const el = document.querySelector(selector);
+      if (el) el.textContent = fmt(value);
+    }
+
+    const waveformCache = {};
+    const noiseBuffer = Array(1024).fill(0).map(() => Math.random() * 2 - 1);
+    let noiseIndex = 0;
+
+    function sineWave(p) { return Math.sin(p); }
+    function squareWave(p) { return Math.sin(p) >= 0 ? 1 : -1; }
+    function sawWave(p) { return (((p % (2 * Math.PI)) / (2 * Math.PI)) * 2) - 1; }
+    function triangleWave(p) { 
+        const np = (p % (2 * Math.PI)) / (2 * Math.PI); 
+        return np < 0.5 ? 4 * np - 1 : 3 - 4 * np; 
+    }
+    function noiseWave() {
+      noiseIndex = (noiseIndex + 1) % noiseBuffer.length;
+      return noiseBuffer[noiseIndex];
+    }
+
+    function generateWaveform(type, phase) {
+      const cacheKey = `${type}-${phase.toFixed(2)}`;
+      if (!waveformCache[cacheKey]) {
+        let value;
+        switch(type) {
+          case 0: value = sineWave(phase); break;
+          case 1: value = squareWave(phase); break;
+          case 2: value = sawWave(phase); break;
+          case 3: value = triangleWave(phase); break;
+          case 4: value = noiseWave(); break;
+          default: value = sineWave(phase);
+        }
+        waveformCache[cacheKey] = value;
+      }
+      return waveformCache[cacheKey];
+    }
+
+    function calculateOscillatorValue(idx, t) {
+      const prevIdx = (idx + 3) % 4;
+      const prevSample = sample[prevIdx];
+      const xmodAmount = (crossMod[idx] / 2000);
+      const modulation = xmodAmount * prevSample;
+      const effectiveFreq = freq[idx] * (1 + modulation);
+      const phase = 2 * Math.PI * effectiveFreq * t + (phaseOffset[idx] * Math.PI / 180);
+      return generateWaveform(waveformType[idx], phase);
+    }
+
+    let currentRelabiValue = 0;
+
+    function relabiWave(t) {
+      let sum = 0;
+      for (let i = 0; i < 4; i++) {
+        if (!lfoDisable[i]) {
+          sample[i] = calculateOscillatorValue(i, t);
+          sum += gain[i] * sample[i];
+        } else {
+          sample[i] = 0;
+        }
+      }
+      currentRelabiValue = sum;
+      return sum;
+    }
+
+function triggerDrum(idx, x, y) {
+      if (audioMute[idx] || !audioBuffers[samples[sampleIndex[idx]]]) return;
+      if (Math.random() * 100 > probability[idx]) return;
+
+      const buffer = audioBuffers[samples[sampleIndex[idx]]];
+      
+      let modAmp = 1.0;
+      let modPitch = 1.0;
+      let modPan = 0; // Default center
+      
+      let pitchFactor = 0;
+      let ampFactor = 0;
+      let filterFactor = 0;
+      let panFactor = 0; // Accumulate pan mods
+
+      const mods = modSettings[idx];
+      mods.forEach(slot => {
+          if(slot.source === 0 || slot.dest === 0) return;
+          
+          let val = 0;
+          if(slot.source === 1) val = currentRelabiValue / 4; 
+          else if (slot.source >= 2 && slot.source <= 5) val = sample[slot.source - 2];
+
+          const amt = slot.amount;
+
+          if(slot.dest === 1) ampFactor += val * amt; 
+          else if (slot.dest === 2) pitchFactor += val * amt;
+          else if (slot.dest === 3) filterFactor += val * amt;
+          else if (slot.dest === 4) panFactor += val * amt; // Handle Pan
+      });
+
+      // 1. Amp Logic
+      modAmp = Math.max(0, Math.min(2, 1.0 + ampFactor));
+
+      // 2. Pitch Logic
+      modPitch = Math.pow(2, pitchFactor * 4); 
+
+      // 3. Pan Logic (Clamp between -1 Left and 1 Right)
+      modPan = Math.max(-1, Math.min(1, panFactor));
+
+      // 4. Filter Logic
+      let useFilter = false;
+      let cutoff = 20000;
+      const hasFilterMod = mods.some(m => m.dest === 3 && m.amount > 0);
+      
+      if(hasFilterMod) {
+          useFilter = true;
+          cutoff = 2000 * Math.pow(2, filterFactor * 5);
+          cutoff = Math.max(20, Math.min(20000, cutoff));
+      }
+
+      // --- Audio Graph Construction ---
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.playbackRate.value = modPitch;
+
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = modAmp;
+
+      // Create Panner
+      const panner = ctx.createStereoPanner();
+      panner.pan.value = modPan;
+
+      // Connect: Source -> (Filter?) -> Gain -> Panner -> Out
+      if(useFilter) {
+          const filter = ctx.createBiquadFilter();
+          filter.type = "lowpass";
+          filter.frequency.value = cutoff;
+          filter.Q.value = 5;
+          
+          source.connect(filter);
+          filter.connect(gainNode);
+      } else {
+          source.connect(gainNode);
+      }
+
+      gainNode.connect(panner);
+      panner.connect(ctx.destination);
+      
+      source.start();
+
+      triggerPoints[idx].push({x, y});
+    }
+
+    // Visualization Variables
+    let time = 0;
+    const dt = 0.01;
+    const waveData = [];
+    const maxLength = 600;
+    const triggerPoints = [[], [], [], []];
+    let lastStates = [false, false, false, false];
+    let lastDrawTime = 0;
+
+    // Separate Drawing from Data Calculation
+    function redrawCanvas() {
+      waveCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+      
+      // Draw Wave Path
+      if(waveData.length > 0) {
+        waveCtx.beginPath();
+        waveCtx.moveTo(0, 75 - waveData[0] * 15);
+        for (let x = 1; x < waveData.length; x++) {
+          waveCtx.lineTo(x, 75 - waveData[x] * 15);
+        }
+        waveCtx.strokeStyle = 'black';
+        waveCtx.stroke();
+      }
+
+      // Draw Thresholds
+      const topY = 75 - parseFloat(topThreshold.value) * 15;
+      const botY = 75 - parseFloat(bottomThreshold.value) * 15;
+      
+      waveCtx.strokeStyle = 'lightgrey';
+      waveCtx.beginPath(); waveCtx.moveTo(0, topY); waveCtx.lineTo(waveCanvas.width, topY); waveCtx.stroke();
+      waveCtx.strokeStyle = 'grey';
+      waveCtx.beginPath(); waveCtx.moveTo(0, botY); waveCtx.lineTo(waveCanvas.width, botY); waveCtx.stroke();
+
+      // Draw Triggers
+      const triggerGroups = new Map();
+      for (let i = 0; i < 4; i++) {
+        triggerPoints[i].forEach(p => {
+          const xPos = Math.floor(p.x);
+          if (!triggerGroups.has(xPos)) triggerGroups.set(xPos, []);
+          triggerGroups.get(xPos).push({ color: drumColors[i], originalY: p.y });
+        });
+      }
+
+      triggerGroups.forEach((dots, xPos) => {
+        dots.sort((a, b) => a.color.localeCompare(b.color));
+        dots.forEach((dot, idx) => {
+          let yOffset = [0, -6, 6, 12][idx] || 0;
+          waveCtx.fillStyle = dot.color;
+          waveCtx.beginPath();
+          waveCtx.arc(xPos, Math.round(dot.originalY) + yOffset, 4, 0, Math.PI * 2);
+          waveCtx.fill();
+        });
+      });
+    }
+
+    function updateWave(val) {
+      waveData.push(val);
+      if (waveData.length > maxLength) waveData.shift();
+      
+      // Age points
+      for (let i = 0; i < 4; i++) {
+        triggerPoints[i] = triggerPoints[i].filter(p => p.x > 0).map(p => ({ x: p.x - 1, y: p.y }));
+      }
+      
+      const now = performance.now();
+      if (now - lastDrawTime >= 16) {
+        redrawCanvas();
+        lastDrawTime = now;
+      }
+    }
+
+    function initializeWaveformPreview() {
+      waveData.length = 0;
+      time = 0;
+      noiseIndex = 0;
+      for (let i = 0; i < maxLength; i++) {
+        const wave = relabiWave(time);
+        waveData.push(wave);
+        time += dt;
+      }
+      redrawCanvas();
+    }
+
+    let isPlaying = false;
+    let animationId = null;
+    let lastFrameTime = 0;
+
+    function loop(timestamp) {
+      if (!isPlaying) return;
+      if (timestamp - lastFrameTime < 16) {
+          animationId = requestAnimationFrame(loop);
+          return;
+      }
+      lastFrameTime = timestamp;
+
+      const timeScale = parseFloat(globalRate.value);
+      const wave = relabiWave(time);
+      time += dt * timeScale;
+
+      const state = [
+        wave > parseFloat(topThreshold.value),
+        wave < parseFloat(topThreshold.value),
+        wave > parseFloat(bottomThreshold.value),
+        wave < parseFloat(bottomThreshold.value),
+        wave > parseFloat(topThreshold.value) || wave < parseFloat(bottomThreshold.value)
+      ];
+
+      for (let i = 0; i < 4; i++) {
+        if (lfoDisable[i]) continue;
+        if (state[mode[i]] && !lastStates[i]) {
+          triggerDrum(i, waveCanvas.width - 1, 75 - wave * 15);
+        }
+        lastStates[i] = state[mode[i]];
+      }
+
+      updateWave(wave);
+      animationId = requestAnimationFrame(loop);
+    }
+
+    document.getElementById('playPauseBtn').addEventListener('click', () => {
+      if (ctx.state === 'suspended') ctx.resume();
+      if (!isPlaying) {
+        isPlaying = true;
+        lastFrameTime = performance.now();
+        animationId = requestAnimationFrame(loop);
+        document.getElementById('playPauseBtn').textContent = 'Pause';
+      } else {
+        isPlaying = false;
+        cancelAnimationFrame(animationId);
+        document.getElementById('playPauseBtn').textContent = 'Play';
+      }
+    });
+
+function randomizeAll() {
+      triggerPoints.forEach(arr => arr.length = 0);
+      
+      // Global controls
+      globalRate.value = (Math.random() * 3.5 + 0.5).toFixed(1);
+      // Update text using fmt() helper
+      globalRateVal.textContent = fmt(globalRate.value);
+      
+      topThreshold.value = (Math.random() * 4 - 2).toFixed(1);
+      topThresholdVal.textContent = fmt(topThreshold.value);
+      
+      bottomThreshold.value = (Math.random() * 4 - 2).toFixed(1);
+      bottomThresholdVal.textContent = fmt(bottomThreshold.value);
+
+      // Swap if bottom > top
+      if (parseFloat(bottomThreshold.value) > parseFloat(topThreshold.value)) {
+        const temp = topThreshold.value;
+        topThreshold.value = bottomThreshold.value;
+        bottomThreshold.value = temp;
+        topThresholdVal.textContent = fmt(topThreshold.value);
+        bottomThresholdVal.textContent = fmt(bottomThreshold.value);
+      }
+
+      for (let i = 0; i < 4; i++) {
+        // USE parseFloat() here so they remain numbers!
+        freq[i] = parseFloat((Math.random() * 4.95 + 0.05).toFixed(2));
+        gain[i] = parseFloat((Math.random() * 1.4 + 0.1).toFixed(2));
+        crossMod[i] = Math.floor(Math.random() * 81);
+        
+        waveformType[i] = Math.floor(Math.random() * 5);
+        mode[i] = Math.floor(Math.random() * 5);
+        sampleIndex[i] = Math.floor(Math.random() * 16);
+        audioMute[i] = Math.random() < 0.1;
+        lfoDisable[i] = Math.random() < 0.1;
+        
+        // Probability is usually an integer 0-100
+        probability[i] = Math.floor(Math.random() * 101);
+        
+        for(let s=0; s<3; s++) {
+            modSettings[i][s].source = Math.random() > 0.7 ? Math.floor(Math.random() * 6) : 0;
+            modSettings[i][s].dest = modSettings[i][s].source > 0 ? Math.floor(Math.random() * 3) + 1 : 0;
+            // USE parseFloat() here too
+            modSettings[i][s].amount = parseFloat(Math.random().toFixed(2));
+        }
+      }
+
+      buildLFOControls();
+      initializeWaveformPreview();
+    }
+    
+    randomizeBtn.addEventListener('click', randomizeAll);
+
+    const helpModal = document.getElementById('helpModal');
+    document.getElementById('helpButton').onclick = () => helpModal.style.display = 'block';
+    document.getElementById('closeModal').onclick = () => helpModal.style.display = 'none';
+    window.onclick = e => { if (e.target === helpModal) helpModal.style.display = 'none'; };
+
+    loadAudioBuffers().then(() => {
+      buildLFOControls();
+      initializeWaveformPreview();
+    });
+  </script>
+</body>
+</html>
